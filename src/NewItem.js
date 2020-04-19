@@ -7,7 +7,7 @@ class NewItem extends React.Component{
 		discription: '',		
 		color:'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')',	
 		list:[],
-		eventToggle:true
+		eventIndex:null
 	}
 	changeVal = (event) => {
 		this.setState({labelName: event.target.value});
@@ -27,7 +27,7 @@ class NewItem extends React.Component{
 				color:'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')'
 			})
 		}else{
-+			newArray.push({label:this.state.labelName,color:this.state.color,dis:this.state.discription})
+			newArray.push({label:this.state.labelName,color:this.state.color,dis:this.state.discription})
 			this.setState({
 				list:newArray,
 				labelName:"",
@@ -58,11 +58,11 @@ class NewItem extends React.Component{
 		}
 		console.log(this.state.list)
 	}
-	editButton = () => {
-		this.setState({eventToggle:false})
+	editButton = (index) => {
+		this.setState({eventIndex:index})
 	}
-	cancelEdit = (e3) => {
-		this.setState({eventToggle:true})
+	Edit = (e3) => {
+		this.setState({eventIndex:null})
 	}
 	changeEditVal = (e2) =>{
 		console.log(e2.target.name)
@@ -70,6 +70,19 @@ class NewItem extends React.Component{
 		newarray[e2.target.name].label=e2.target.value
 		this.setState({list:newarray})
 
+	}
+	changeEditDis = (e2) =>{
+		console.log(e2.target.name)
+		let newarray=[...this.state.list];
+		newarray[e2.target.name].dis=e2.target.value
+		this.setState({list:newarray})
+	}
+	onEditColor = (e2) =>{
+		console.log(e2.target.name)
+		var ColorCode = 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')'
+		let newarray=[...this.state.list];
+		newarray[e2.target.name].color=ColorCode
+		this.setState({list:newarray})
 	}
 	render(){
 		return(
@@ -106,51 +119,53 @@ class NewItem extends React.Component{
 						
 						<div>{this.state.list.map((element,index)=>{
 							return(	
-								<div>{this.state.eventToggle?
-								<div className="box-row">
-									
-									<div>
+								<div className= "form">
+
+								{this.state.eventIndex==index?
+
+								<div className="input-box">	
+
 										<p className="label-preview" key={index} name={element.label}>
 											<span style={{backgroundColor:element.color}}>
 												{element.label}
 											</span>
 										</p>
-									</div>
-									<div className = "dis-text"> {element.dis} </div>
+										
+										<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"/>
+										<div>
+										<p className = "des"> Label Name </p>
+										<input name='labelname' type="text" onChange={this.changeEditVal} name={index} placeholder="Label Name" value={element.label}></input>
+										</div>
+										<div>
+										<p className = "des"> Label Discription </p>
+										<input name='discription' type="text" onChange={this.changeEditDis} name={index} placeholder="Label Discription" value={element.dis}></input>
+										</div>						
+										<div>	
+										<button className="button-change" onClick={this.onEditColor} name={index} style={{backgroundColor:element.color}}><i className="fa fa-refresh"></i></button>
+										<input type="text" value={element.color}></input> 
+										</div>
+										<div>
+											<button className="submit-button" onClick={this.Edit}> Update </button>
+										</div>
+								</div>	
+								:
+									<div className="box-row">
+								
+								<p className="label-preview" key={index} name={element.label}>
+											<span style={{backgroundColor:element.color}}>
+												{element.label}
+											</span>
+								</p>	
+								<div className = "dis-text"> {element.dis} </div>
 									<div> 
-										<button className="submit-button" onClick={this.editButton}>Edit</button>
+										<button className="submit-button" onClick={()=>this.editButton(index)}>Edit</button>
 										<button className="submit-button" style={{margin:'20px'}} onClick={() => {this.deleteLabel(index)}}> remove label </button>
 									</div>
 
-								</div>	
-								: 
-				<div className= "form">
-					<div>
-					<div className="flex-inner"><span className="label-preview"  style={{backgroundColor:this.state.color,hieght:'20px'}}>{this.state.labelName || element.label}</span><button className="submit-button" style={{margin:'20px'}} onClick={() => {this.deleteLabel(index)}}> remove label </button></div>	
-					</div>					
-					<div className="input-box" >
-						<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"/>
-						<div>
-						<p className = "des"> Label Name </p>
-						<input name='labelname' type="text" onChange={this.changeEditVal} name={index} placeholder="Label Name" value={element.label}></input>
-						</div>
-						<div>
-						<p className = "des"> Label Discription </p>
-						<input name='discription' type="text" onChange={this.changeDis} placeholder="Label Discription" value={element.dis}></input>
-						</div>						
-						<div>
-						<button className="button-change" onClick={this.onColor} style={{backgroundColor:this.state.color}}><i className="fa fa-refresh"></i></button>
-						<input type="text" value={element.color}></input> 
-						</div>
-						<div>
-							<button className="submit-button" onClick={this.cancelEdit}> Cancel </button>
-							{this.state.labelName===""
-							? <button className="submit-button" style={{backgroundColor:'#94d3a2',	color:"white"}} disabled>Update Label</button>
-							: <button className="submit-button" onClick={this.onSubmit} style={{backgroundColor:'#28a745',color:"white"}}>Update Label</button>	      								}
-						</div>
-					</div>
-				</div>				}
-								</div>						
+								</div>		
+								}
+								</div>
+														
 							)
 						})}</div>
 
